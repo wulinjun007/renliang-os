@@ -1,0 +1,1336 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>人粮 OS · 7 天批量备餐系统</title>
+<meta name="description" content="用周末 1～2 小时，把未来 7 天的吃饭问题一次性解决。">
+<style>
+/* ============================================================
+   人粮 OS · 设计语言：GL-079 PIE（Just Eat Takeaway Design System）
+   Token 全部取自《GL-079-PIE-design-system.md》提取规范；
+   berry/latte/cupcake/aubergine 四族官方未暴露 HEX，按族名气质派生。
+   ============================================================ */
+:root{
+  /* ink / content */
+  --ink:#1c1a17;               /* truffle-100 */
+  --ink-76:rgba(28,26,23,.78); /* content-interactive-primary 气质 */
+  --ink-soft:rgba(28,26,23,.55);
+  --ink-faint:rgba(28,26,23,.34);
+  /* surface（truffle 松露米棕族） */
+  --bg:#ffffff;
+  --surface:#f0ece6;           /* truffle-20 */
+  --surface-2:#f6f3ef;         /* truffle-10 */
+  --surface-3:#e7e2da;         /* truffle-30 */
+  --mozz-20:#efedea;
+  --mozz-5:#fcfcfc;
+  /* action / food families */
+  --orange:#f36805;            /* 品牌行动橙 */
+  --orange-25:#ff9933;
+  --orange-10:rgba(243,104,5,.10);
+  --tomato:#f75e28;
+  --tomato-30:#ff966d;
+  --tomato-10:rgba(247,94,40,.12);
+  --blue:#3147ad;              /* 链接/信息 */
+  --red:#d60e0a;               /* 错误/过期 */
+  --green:#2b7836;             /* 成功/蔬菜 */
+  --green-10:rgba(43,120,54,.12);
+  --berry:#a62639;  --berry-10:rgba(166,38,57,.12);
+  --latte:#b08968;  --latte-10:rgba(176,137,104,.14);
+  --cupcake:#7a8b99;--cupcake-10:rgba(122,139,153,.14);
+  --aubergine:#3d2c3e;--aubergine-10:rgba(61,44,62,.12);
+  /* line / elevation */
+  --line:rgba(0,0,0,.08);
+  --line-soft:#f0ece6;
+  --e1:0 2px 2px rgba(0,0,0,.03),0 3px 1px -2px rgba(0,0,0,.07),0 1px 5px rgba(0,0,0,.06);
+  --e4:0 4px 4px rgba(0,0,0,.04),0 6px 2px -3px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.07);
+  --e9:0 8px 8px rgba(0,0,0,.16),0 3px 20px -3px rgba(0,0,0,.4),0 4px 8px -2px rgba(0,0,0,.24);
+  /* radius */
+  --r-sm:8px; --r-card:12px; --r-lg:16px; --r-pill:50rem;
+  /* motion */
+  --ease-out:cubic-bezier(0,0,.18,.99);
+  --ease-in:cubic-bezier(.8,0,1,1);
+  --t-fast:100ms; --t-med:200ms; --t-slow:350ms;
+  /* layout */
+  --maxw:1180px; --header-h:64px;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei","Segoe UI",sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;line-height:20px;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;padding-bottom:76px}
+@media(min-width:769px){body{padding-bottom:0}}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;font-size:inherit}
+input,select{font-family:inherit;font-size:14px;color:var(--ink)}
+a{color:var(--blue)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:-.02em}
+::selection{background:var(--orange-10)}
+
+/* ---------- 通用排版 ---------- */
+.display{font-size:clamp(30px,4vw,48px);line-height:1.12;font-weight:900;letter-spacing:-.02em;color:var(--ink)}
+.h2{font-size:clamp(22px,2.4vw,32px);line-height:36px;font-weight:900;letter-spacing:-.01em}
+.h3{font-size:24px;line-height:28px;font-weight:800}
+.eyebrow{font-size:12px;line-height:16px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.body-l{font-size:16px;line-height:24px;color:var(--ink-76)}
+.muted{color:var(--ink-soft)}
+.small{font-size:12px;line-height:16px;color:var(--ink-soft)}
+
+/* ---------- 顶部导航 ---------- */
+.site-header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line-soft);height:var(--header-h)}
+.site-header .inner{max-width:var(--maxw);margin:0 auto;height:100%;display:flex;align-items:center;gap:24px;padding:0 24px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:900;font-size:19px;letter-spacing:-.02em;white-space:nowrap}
+.logo .dot{width:10px;height:10px;border-radius:50%;background:var(--orange)}
+.logo .os{font-family:var(--mono);font-weight:600;color:var(--ink-soft);font-size:13px;margin-left:2px}
+.main-nav{display:flex;gap:4px;flex:1;min-width:0}
+.main-nav button{height:36px;padding:0 16px;border-radius:var(--r-pill);font-size:14px;font-weight:500;color:var(--ink-76);
+  display:flex;align-items:center;gap:7px;transition:background var(--t-fast) var(--ease-out);white-space:nowrap}
+.main-nav button:hover{background:var(--surface)}       /* PIE：hover 底色换档 */
+.main-nav button.active{background:var(--ink);color:#fff}
+.main-nav button svg{width:16px;height:16px;flex:none}
+.header-right{display:flex;align-items:center;gap:10px}
+.chip{height:28px;padding:0 12px;border-radius:var(--r-pill);background:var(--surface-2);color:var(--ink-soft);
+  font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:50%}
+.chip.demo{background:var(--orange-10);color:var(--orange);font-weight:700}
+.btn-search{height:36px;padding:0 14px;border-radius:40px;background:#fff;border:1px solid var(--line);
+  color:var(--ink-76);font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;
+  transition:background var(--t-fast) var(--ease-out)}
+.btn-search:hover{background:var(--surface)}
+@media(max-width:900px){.main-nav{display:none}}
+@media(max-width:600px){.header-right .chip.date{display:none}}
+
+/* ---------- 移动端底部 Tab ---------- */
+.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:900;background:rgba(255,255,255,.96);
+  backdrop-filter:blur(10px);border-top:1px solid var(--line-soft);
+  padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;
+  font-size:10px;font-weight:600;color:var(--ink-soft);border-radius:var(--r-sm)}
+.tabbar button svg{width:22px;height:22px}
+.tabbar button.active{color:var(--ink)}
+@media(max-width:768px){.tabbar{display:flex}}
+
+/* ---------- 布局 ---------- */
+.view{display:none;animation:fadein var(--t-med) var(--ease-out)}
+.view.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:32px 24px 64px}
+@media(max-width:600px){.wrap{padding:20px 16px 48px}}
+.page-head{margin-bottom:24px}
+.page-head .sub{margin-top:6px;color:var(--ink-soft);font-size:14px}
+
+/* ---------- 按钮（PIE 体系） ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;
+  border-radius:var(--r-pill);font-size:15px;font-weight:700;transition:background var(--t-fast) var(--ease-out),opacity var(--t-fast)}
+.btn-primary{background:var(--orange);color:#fff}
+.btn-primary:hover{background:var(--orange-25)}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-ink:hover{background:#3a362f}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink-76);font-weight:600}
+.btn-ghost:hover{background:var(--surface)}
+.btn-sm{height:34px;padding:0 14px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.link-strong{font-weight:700;text-decoration:underline;text-underline-offset:3px;color:var(--ink)}
+
+/* ---------- 卡片 ---------- */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--e1)}
+.card-pad{padding:24px}
+.tile{width:64px;height:64px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;
+  font-size:30px;flex:none}
+.tile.sm{width:44px;height:44px;border-radius:var(--r-card);font-size:22px}
+.tile.tomato{background:var(--tomato-10)}
+.tile.latte{background:var(--latte-10)}
+.tile.green{background:var(--green-10)}
+.tile.orange{background:var(--orange-10)}
+.tile.berry{background:var(--berry-10)}
+.tile.cupcake{background:var(--cupcake-10)}
+.tile.aubergine{background:var(--aubergine-10)}
+
+/* ---------- 进度条 ---------- */
+.bar{height:8px;border-radius:var(--r-pill);background:var(--surface-3);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:var(--r-pill);background:var(--ink);transition:width var(--t-slow) var(--ease-out)}
+.bar.orange>i{background:var(--orange)}
+.bar.green>i{background:var(--green)}
+.bar.thin{height:6px}
+
+/* ---------- 标签 ---------- */
+.tag{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:var(--r-pill);
+  font-size:12px;font-weight:600;background:var(--surface-2);color:var(--ink-soft)}
+.tag.green{background:var(--green-10);color:var(--green)}
+.tag.orange{background:var(--orange-10);color:var(--orange)}
+.tag.red{background:rgba(214,14,10,.10);color:var(--red)}
+.tag.blue{background:rgba(49,71,173,.10);color:var(--blue)}
+.tag.aubergine{background:var(--aubergine-10);color:var(--aubergine)}
+.tag.ink{background:var(--ink);color:#fff}
+
+/* ---------- 斜切色带（PIE 品牌签名分区） ---------- */
+.band{background:var(--orange);color:#fff;clip-path:polygon(0 18%,100% 0,100% 82%,0 100%);
+  padding:56px 24px;text-align:center}
+.band .display{color:#fff}
+
+/* ---------- Onboarding ---------- */
+.hero{background:var(--surface);position:relative;overflow:hidden}
+.hero .inner{max-width:var(--maxw);margin:0 auto;padding:72px 24px 88px;text-align:center}
+.hero .body-l{max-width:560px;margin:16px auto 28px}
+.hero .stats{display:flex;gap:32px;justify-content:center;margin-top:40px;flex-wrap:wrap}
+.hero .stats .num{font-size:28px}
+.hero .stats span{display:block;font-size:12px;color:var(--ink-soft);margin-top:2px}
+
+/* 步骤条 */
+.steps{display:flex;gap:8px;margin-bottom:20px}
+.steps .step{flex:1;height:4px;border-radius:var(--r-pill);background:var(--surface-3)}
+.steps .step.on{background:var(--orange)}
+.wiz-q{font-size:18px;font-weight:800;margin-bottom:6px}
+.field{margin-bottom:20px}
+.field label{display:block;font-weight:700;font-size:14px;margin-bottom:8px}
+.field .hint{font-size:12px;color:var(--ink-soft);margin-top:6px}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:var(--r-pill);padding:3px;gap:2px}
+.seg button{height:32px;padding:0 16px;border-radius:var(--r-pill);font-size:13px;font-weight:600;color:var(--ink-soft)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:var(--e1)}
+.stepper{display:inline-flex;align-items:center;gap:0;background:var(--surface-2);border-radius:var(--r-pill);overflow:hidden}
+.stepper button{width:40px;height:40px;font-size:18px;font-weight:700;color:var(--ink-76)}
+.stepper button:hover{background:var(--surface-3)}
+.stepper .val{min-width:86px;text-align:center;font-weight:700}
+.stepper .val small{display:block;font-size:10px;color:var(--ink-soft);font-weight:600}
+.input{height:44px;border:1px solid var(--line);border-radius:var(--r-card);padding:0 14px;background:#fff;width:100%}
+.input:focus{outline:2px solid var(--blue);outline-offset:1px}
+
+/* 食材 chips */
+.food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.food-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--line);
+  border-radius:var(--r-card);background:#fff;text-align:left;transition:border-color var(--t-fast),background var(--t-fast)}
+.food-chip:hover{background:var(--surface-2)}
+.food-chip.on{border-color:var(--orange);background:var(--orange-10)}
+.food-chip .nm{font-weight:700;font-size:14px;line-height:18px}
+.food-chip .meta{font-size:11px;color:var(--ink-soft);line-height:14px}
+.check-dot{margin-left:auto;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);flex:none;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px}
+.food-chip.on .check-dot{background:var(--orange);border-color:var(--orange)}
+
+/* ---------- Today ---------- */
+.today-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:24px;align-items:start}
+@media(max-width:900px){.today-grid{grid-template-columns:1fr}}
+.next-meal{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--e1);overflow:hidden}
+.next-meal .head{background:var(--surface);padding:20px 24px;display:flex;align-items:center;gap:14px}
+.next-meal .body{padding:24px}
+.meal-items{display:flex;flex-direction:column;gap:2px;margin:16px 0}
+.meal-item{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:var(--r-sm)}
+.meal-item:hover{background:var(--surface-2)}
+.meal-item .g{margin-left:auto;font-weight:700;font-size:15px}
+.macro-row{display:flex;gap:20px;padding:14px 16px;background:var(--surface-2);border-radius:var(--r-card)}
+.macro-row .m{flex:1}
+.macro-row .m .lbl{font-size:11px;color:var(--ink-soft);font-weight:600;margin-bottom:4px}
+.macro-row .m .v{font-size:16px}
+.kpi-card{padding:20px 24px}
+.kpi-card+.kpi-card{margin-top:16px}
+.kpi-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.kpi-head .v{font-size:22px}
+.kpi-head .v small{font-size:12px;color:var(--ink-soft);font-weight:600}
+.meal-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line-soft)}
+.meal-row .tag{flex:none}
+.meal-row .what{font-weight:600;font-size:14px}
+.meal-row .kc{margin-left:auto;font-size:13px;color:var(--ink-soft);white-space:nowrap;padding-left:12px}
+
+/* ---------- Week ---------- */
+.week-grid{display:grid;grid-template-columns:repeat(7,minmax(146px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.day-col{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);min-width:146px}
+.day-col.today-col{border-color:var(--orange);box-shadow:0 0 0 1.5px var(--orange)}
+.day-head{padding:10px 12px;border-bottom:1px solid var(--line-soft);background:var(--surface-2);border-radius:var(--r-card) var(--r-card) 0 0}
+.day-head .dn{font-weight:800;font-size:14px}
+.day-head .dm{font-size:11px;color:var(--ink-soft)}
+.day-head .sum{margin-top:4px;font-size:11px;color:var(--ink-soft);white-space:nowrap}
+.day-col.today-col .day-head{background:var(--orange-10)}
+.wcell{padding:10px 12px;border-bottom:1px solid var(--line-soft);cursor:pointer;transition:background var(--t-fast)}
+.wcell:last-child{border-bottom:0}
+.wcell:hover{background:var(--surface-2)}
+.wcell .slot{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:4px}
+.wcell .it{font-size:12px;line-height:18px;color:var(--ink-76)}
+.wcell .kc{font-size:11px;color:var(--ink-soft);margin-top:4px}
+.week-legend{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;align-items:center}
+
+/* ---------- Shopping ---------- */
+.shop-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:24px;align-items:start}
+@media(max-width:900px){.shop-grid{grid-template-columns:1fr}}
+.shop-cat{margin-bottom:20px}
+.shop-cat .cat-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:800;font-size:15px}
+.shop-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-sm);transition:background var(--t-fast)}
+.shop-item:hover{background:var(--surface-2)}
+.shop-item .nm{font-weight:600}
+.shop-item .qty{margin-left:auto;font-weight:700}
+.shop-item .cost{width:64px;text-align:right;color:var(--ink-soft);font-size:13px}
+.cbox{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);flex:none;
+  display:flex;align-items:center;justify-content:center;color:#fff;transition:background var(--t-fast)}
+.cbox.done{background:var(--green);border-color:var(--green)}
+.shop-item.bought .nm,.shop-item.bought .qty{text-decoration:line-through;color:var(--ink-faint)}
+
+/* ---------- Prep ---------- */
+.prep-head-note{background:var(--surface);border-radius:var(--r-card);padding:16px 20px;margin-bottom:20px;
+  display:flex;gap:12px;align-items:flex-start}
+.prep-head-note .body-l{font-size:14px;line-height:20px;color:var(--ink-76)}
+.prep-task{margin-bottom:16px;overflow:hidden}
+.prep-task .head{display:flex;align-items:center;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line-soft)}
+.prep-task .head .tt{font-weight:800;font-size:16px}
+.prep-task .head .meta{font-size:12px;color:var(--ink-soft)}
+.prep-task .body{padding:16px 20px 20px}
+.steps-list{display:flex;flex-direction:column;gap:2px}
+.step-row{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:var(--r-sm)}
+.step-row:hover{background:var(--surface-2)}
+.step-row .txt{font-size:14px}
+.step-row.done .txt{color:var(--ink-faint);text-decoration:line-through}
+.mode-toggle{display:flex;background:var(--surface-2);border-radius:var(--r-pill);padding:3px;gap:2px}
+.mode-toggle button{height:32px;padding:0 14px;border-radius:var(--r-pill);font-size:13px;font-weight:600;color:var(--ink-soft)}
+.mode-toggle button.on{background:#fff;color:var(--ink);box-shadow:var(--e1)}
+.box-preview{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 8px}
+.box-card{flex:none;width:150px;background:var(--surface-2);border-radius:var(--r-card);padding:12px}
+.box-card .bn{font-weight:800;font-size:12px;color:var(--ink-soft)}
+.box-card .bi{font-size:12px;line-height:19px;margin-top:4px}
+
+/* ---------- Fridge ---------- */
+.zone-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.zone-tabs button{height:36px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--line);
+  font-weight:600;font-size:13px;background:#fff;color:var(--ink-76);display:inline-flex;align-items:center;gap:7px;
+  transition:background var(--t-fast)}
+.zone-tabs button:hover{background:var(--surface-2)}
+.zone-tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.fridge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.fridge-card{padding:16px}
+.fridge-card .top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fridge-card .nm{font-weight:800;font-size:15px}
+.fridge-card .rows{font-size:12px;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px;margin-bottom:12px}
+.fridge-card .rows b{color:var(--ink);font-weight:700}
+.fridge-card .foot{display:flex;align-items:center;gap:8px}
+
+/* ---------- Settings ---------- */
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.form-row .field{margin-bottom:0}
+.tool-chips{display:flex;gap:8px;flex-wrap:wrap}
+.tool-chips button{height:34px;padding:0 14px;border-radius:var(--r-pill);border:1.5px solid var(--line);
+  font-size:13px;font-weight:600;background:#fff;color:var(--ink-76)}
+.tool-chips button.on{border-color:var(--orange);background:var(--orange-10);color:var(--orange)}
+
+/* ---------- AI 指令胶囊（PIE Search 胶囊形态） ---------- */
+.ai-capsule{display:flex;align-items:center;gap:10px;height:48px;border:1px solid var(--line);border-radius:40px;
+  background:#fff;padding:0 8px 0 18px;box-shadow:var(--e1)}
+.ai-capsule input{flex:1;border:0;outline:0;font-size:15px;background:none;min-width:0}
+.ai-capsule .kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;
+  border-radius:6px;padding:1px 6px;color:var(--ink-soft)}
+.ai-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ai-chips button{height:32px;padding:0 14px;border-radius:var(--r-pill);background:var(--surface-2);
+  font-size:13px;font-weight:600;color:var(--ink-76);transition:background var(--t-fast)}
+.ai-chips button:hover{background:var(--surface-3)}
+
+/* ---------- 弹层 / Toast ---------- */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:5000;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex;animation:fadein var(--t-fast) var(--ease-out)}
+.modal{background:#fff;border-radius:var(--r-lg);box-shadow:var(--e9);width:min(520px,100%);max-height:86vh;overflow:auto;padding:24px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(16px);z-index:6000;
+  background:var(--ink);color:#fff;border-radius:var(--r-pill);padding:10px 20px;font-size:14px;font-weight:600;
+  opacity:0;pointer-events:none;transition:opacity var(--t-med) var(--ease-out),transform var(--t-med) var(--ease-out);
+  box-shadow:var(--e9);max-width:86vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- 生成结果 ---------- */
+.gen-result{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0}
+.gen-result .gr{background:var(--surface-2);border-radius:var(--r-card);padding:14px 16px}
+.gen-result .gr .v{font-size:22px;font-weight:800}
+.gen-result .gr .k{font-size:12px;color:var(--ink-soft);margin-top:2px}
+.skeleton{height:12px;border-radius:var(--r-pill);background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-3) 50%,var(--surface-2) 75%);
+  background-size:200% 100%;animation:sk 1.1s infinite linear}
+@keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* ---------- 页脚 ---------- */
+.site-footer{border-top:1px solid var(--line-soft);background:var(--surface-2)}
+.site-footer .inner{max-width:var(--maxw);margin:0 auto;padding:28px 24px;display:flex;gap:16px;flex-wrap:wrap;
+  justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-soft)}
+.site-footer b{color:var(--ink)}
+
+/* 空状态 */
+.empty{padding:48px 24px;text-align:center;color:var(--ink-soft)}
+.empty .big{font-size:40px;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<!-- ============ 顶部导航 ============ -->
+<header class="site-header">
+  <div class="inner">
+    <div class="logo"><span class="dot"></span>人粮<span class="os">OS</span></div>
+    <nav class="main-nav" id="mainNav" aria-label="主导航">
+      <button data-nav="today">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="7"/><path d="M12 13l2.5-2.5M9 4h6"/></svg>
+        今天</button>
+      <button data-nav="week">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+        本周</button>
+      <button data-nav="prep">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20l7-7M14.5 4.5l5 5-3 3-5-5zM17 3l4 4"/></svg>
+        备餐</button>
+      <button data-nav="fridge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M6 10h12M9 6.5v1.5M9 13v3"/></svg>
+        冰箱</button>
+      <button data-nav="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1.2-3.2 3.8-5 7-5s5.8 1.8 7 5"/></svg>
+        我的</button>
+    </nav>
+    <div class="header-right">
+      <span class="chip date" id="chipDate"></span>
+      <span class="chip demo" title="原型演示数据">演示</span>
+      <button class="btn-search" data-nav="generate">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>
+        生成一周人粮</button>
+    </div>
+  </div>
+</header>
+
+<!-- 移动端底部 Tab -->
+<nav class="tabbar" aria-label="底部导航">
+  <button data-nav="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="7"/><path d="M12 13l2.5-2.5M9 4h6"/></svg>今天</button>
+  <button data-nav="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>本周</button>
+  <button data-nav="prep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20l7-7M14.5 4.5l5 5-3 3-5-5zM17 3l4 4"/></svg>备餐</button>
+  <button data-nav="fridge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M6 10h12M9 6.5v1.5M9 13v3"/></svg>冰箱</button>
+  <button data-nav="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1.2-3.2 3.8-5 7-5s5.8 1.8 7 5"/></svg>我的</button>
+</nav>
+
+<main>
+<!-- ============ 01 Onboarding ============ -->
+<section class="view" id="view-onboarding">
+  <div class="hero">
+    <div class="inner">
+      <div class="eyebrow">Human Feed OS · V0.1</div>
+      <h1 class="display" style="margin-top:14px">用周末 2 小时，<br>解决未来 7 天的吃饭问题</h1>
+      <p class="body-l">输入身体目标、餐数、喜欢吃的和预算——系统算好该买什么、买多少、怎么一次做完、怎么分装保存。之后每天只需要 3～10 分钟复热。</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="Wiz.start()">3 分钟完成配置</button>
+        <button class="btn btn-ghost" onclick="Demo.load()">跳过配置 · 直接体验演示数据</button>
+      </div>
+      <div class="stats">
+        <div><span class="num">10 分钟</span><span>完成一周饮食决策</span></div>
+        <div><span class="num">1 次</span><span>集中采购</span></div>
+        <div><span class="num">1 次</span><span>批量备餐</span></div>
+        <div><span class="num">3-10 分钟</span><span>每餐复热</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="band" style="margin-top:0">
+    <div class="display" style="font-size:clamp(20px,2.6vw,30px)">不是「今天吃什么」，<br>而是「一次备餐，管 7 天」。</div>
+  </div>
+
+  <div class="wrap" style="max-width:860px">
+    <!-- 向导 -->
+    <div id="wizBox" style="display:none">
+      <div class="steps" id="wizSteps"></div>
+      <div class="card card-pad" id="wizBody"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:16px">
+        <button class="btn btn-ghost btn-sm" onclick="Wiz.prev()">上一步</button>
+        <button class="btn btn-primary btn-sm" id="wizNext" onclick="Wiz.next()">下一步</button>
+      </div>
+    </div>
+    <div id="wizIdle" class="card card-pad" style="text-align:center;padding:40px 24px">
+      <div class="h3">先花 3 分钟，让系统认识你</div>
+      <p class="body-l" style="margin:10px auto 22px;max-width:420px">目标热量 · 蛋白质 · 每日餐数 · 预算 · 喜欢的食材——只配置这一次，之后每周一键生成。</p>
+      <button class="btn btn-ink" onclick="Wiz.start()">开始配置</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 今天 ============ -->
+<section class="view" id="view-today">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="h2">今天吃这些</h1>
+      <div class="sub" id="todaySub"></div>
+    </div>
+    <div id="todayBody"></div>
+  </div>
+</section>
+
+<!-- ============ 03 生成一周计划 ============ -->
+<section class="view" id="view-generate">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="h2">生成一周人粮</h1>
+      <div class="sub">目标 → 食材 → 预算，一键算出 7 天 × <span id="genMealsN">3</span> 餐的组合、采购量与备餐任务。</div>
+    </div>
+
+    <div class="card card-pad" style="margin-bottom:24px">
+      <div class="ai-capsule">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg>
+        <input id="aiInput" placeholder="告诉系统你想调整什么…" aria-label="AI 指令">
+        <span class="kbd">⏎</span>
+      </div>
+      <div class="ai-chips">
+        <button onclick="AI.swapChicken()">我不想吃鸡胸肉了</button>
+        <button onclick="AI.budget120()">这周预算降到 ¥120</button>
+        <button onclick="AI.regenerate()">帮我生成下周人粮</button>
+      </div>
+    </div>
+
+    <div class="card card-pad">
+      <div class="steps" id="genSteps"></div>
+      <div id="genBody"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 本周 ============ -->
+<section class="view" id="view-week">
+  <div class="wrap">
+    <div class="page-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div>
+        <h1 class="h2">本周计划</h1>
+        <div class="sub" id="weekSub"></div>
+        <div class="sub" id="weekBadges" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" data-nav="shopping">采购清单 →</button>
+        <button class="btn btn-ghost btn-sm" data-nav="prep">周末备餐 →</button>
+        <button class="btn btn-primary btn-sm" data-nav="generate">重新生成</button>
+      </div>
+    </div>
+    <div id="weekBody"></div>
+    <div class="week-legend">
+      <span class="tag">点击任意一餐可调整份量 / 换蛋白</span>
+      <span class="tag orange">份量为生重 · 鸡蛋按个计</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 购物清单 ============ -->
+<section class="view" id="view-shopping">
+  <div class="wrap">
+    <div class="page-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div>
+        <h1 class="h2">购物清单</h1>
+        <div class="sub">整周食材已自动聚合 · 点击即标记已买</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <label class="tag" style="cursor:pointer;height:34px">
+          <input type="checkbox" id="lossToggle" onchange="App.toggleLoss(this.checked)" style="accent-color:var(--orange)">
+          加 10% 损耗
+        </label>
+        <button class="btn btn-primary btn-sm" data-nav="prep">去买 · 然后备餐 →</button>
+      </div>
+    </div>
+    <div id="shopBody"></div>
+  </div>
+</section>
+
+<!-- ============ 06 周末备餐 ============ -->
+<section class="view" id="view-prep">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="h2">周末备餐 · 生产任务</h1>
+      <div class="sub">按<b>食材维度</b>组织，而不是菜谱维度——同一种食材一次处理完，按份分装。</div>
+    </div>
+    <div class="prep-head-note">
+      <div class="tile sm orange" style="font-size:18px">🧑‍🍳</div>
+      <div>
+        <div style="font-weight:800;margin-bottom:2px">分装模式</div>
+        <div class="body-l" style="margin-bottom:10px">模式 A 提前装盒，打开即吃；模式 B 全部散装冷冻，每餐按克数称重取用。</div>
+        <div class="mode-toggle" id="modeToggle"></div>
+      </div>
+    </div>
+    <div id="prepBody"></div>
+  </div>
+</section>
+
+<!-- ============ 07 冰箱 ============ -->
+<section class="view" id="view-fridge">
+  <div class="wrap">
+    <div class="page-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div>
+        <h1 class="h2">冰箱</h1>
+        <div class="sub">制作日期 · 保质期 · 剩余份数，一目了然</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" data-nav="prep">去备餐补充库存 →</button>
+    </div>
+    <div class="zone-tabs" id="zoneTabs"></div>
+    <div id="fridgeBody"></div>
+  </div>
+</section>
+
+<!-- ============ 08 设置 ============ -->
+<section class="view" id="view-settings">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="h2">我的</h1>
+      <div class="sub">身体目标与偏好 · 系统不提供医疗建议，数值请遵医嘱</div>
+    </div>
+    <div id="setBody"></div>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <div><b>人粮 OS</b> · V0.1 原型 · 一次备餐解决未来七天</div>
+    <div>设计语言：<b>GL-079 PIE</b>（Just Eat Takeaway Design System）· 数据仅存于本浏览器 localStorage</div>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)Modal.close()"><div class="modal" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   人粮 OS · 单文件原型
+   数据模型：Profile / MealPlan / Shopping / PrepBatch / Inventory / Eaten
+   状态机：PLANNED → PURCHASED → PREPPED → REFRIGERATED/FROZEN → READY → CONSUMED
+   ============================================================ */
+'use strict';
+
+/* ---------- 食材库（F02） ---------- */
+const FOODS = {
+  chicken:{name:'鸡胸肉',cat:'protein',tile:'tomato',emoji:'🍗',per100:{kcal:133,p:24,f:3.6,c:.6},price:16,portion:150,fridge:2,freezer:90,
+    steps:['切块','腌制（盐 · 黑椒 · 蒜粉）','烤箱 180℃ · 20 分钟','冷却装袋','{n} · 每份 {g}g']},
+  beef:{name:'牛肉(瘦)',cat:'protein',tile:'berry',emoji:'🥩',per100:{kcal:125,p:22,f:5,c:0},price:48,portion:150,fridge:2,freezer:90,
+    steps:['切条','分装 {n} · 每份 {g}g','冷藏 Day1-3 · 冷冻 Day4-7']},
+  shrimp:{name:'虾仁',cat:'protein',tile:'orange',emoji:'🦐',per100:{kcal:93,p:20.3,f:.8,c:.2},price:40,portion:150,fridge:1,freezer:60,
+    steps:['解冻','焯水 1 分钟','冰水冷却沥干','分装 {n} · 每份 {g}g']},
+  egg:{name:'鸡蛋',cat:'protein',tile:'orange',emoji:'🥚',per100:{kcal:144,p:13.3,f:8.8,c:2.8},price:12,portion:110,eggPiece:55,fridge:14,freezer:0,
+    steps:['一次煮 {n2} · 8 分钟','过冷水','带壳冷藏 · 每餐 2 个']},
+  oats:{name:'燕麦',cat:'carb',tile:'latte',emoji:'🥣',per100:{kcal:370,p:13,f:7,c:60},price:20,portion:60,fridge:180,freezer:0,
+    steps:['分装 60g × 7 袋','早餐热水冲泡即食']},
+  rice:{name:'大米',cat:'carb',tile:'latte',emoji:'🍚',per100:{kcal:345,p:7.4,f:.8,c:77},price:7,portion:90,cookYield:'约 200g 熟饭',fridge:0,freezer:0,
+    steps:['量米','淘洗','电饭煲分批蒸','晾凉分盒','每盒熟饭约 200g']},
+  potato:{name:'土豆',cat:'carb',tile:'latte',emoji:'🥔',per100:{kcal:81,p:2.6,f:.2,c:17},price:5,portion:200,fridge:7,freezer:60,
+    steps:['去皮切块','蒸 20 分钟','分装 {n} · 每份 {g}g']},
+  sweetpotato:{name:'红薯',cat:'carb',tile:'orange',emoji:'🍠',per100:{kcal:86,p:1.6,f:.2,c:20},price:6,portion:200,fridge:7,freezer:60,
+    steps:['洗净','烤箱 200℃ · 40 分钟','分装 {n} · 每份 {g}g']},
+  corn:{name:'玉米',cat:'carb',tile:'latte',emoji:'🌽',per100:{kcal:112,p:4,f:1.2,c:23},price:8,portion:200,fridge:5,freezer:60,
+    steps:['切段','煮 10 分钟','分装 {n} · 每份 {g}g']},
+  broccoli:{name:'西兰花',cat:'veg',tile:'green',emoji:'🥦',per100:{kcal:34,p:2.8,f:.4,c:6.6},price:11,portion:150,fridge:3,freezer:30,
+    steps:['清洗','切块','焯水 90 秒','过冷水沥干','分装 {n} · 每份 {g}g']},
+  carrot:{name:'胡萝卜',cat:'veg',tile:'orange',emoji:'🥕',per100:{kcal:39,p:1,f:.2,c:8.8},price:5,portion:150,fridge:14,freezer:30,
+    steps:['切条','蒸 8 分钟','分装 {n} · 每份 {g}g']},
+  spinach:{name:'菠菜',cat:'veg',tile:'green',emoji:'🥬',per100:{kcal:24,p:2.6,f:.3,c:4.5},price:9,portion:150,fridge:3,freezer:30,
+    steps:['清洗','焯水 30 秒','挤干团成球','分装 {n} · 每份 {g}g']},
+  oil:{name:'橄榄油',cat:'fat',tile:'green',emoji:'🫒',per100:{kcal:884,p:0,f:100,c:0},price:7,portion:10,fridge:365,freezer:0,
+    steps:['按餐 10g 分装小瓶']},
+};
+const CAT_LABEL={protein:'蛋白质',carb:'碳水',veg:'蔬菜',fat:'油脂'};
+const CAT_COLOR={protein:'var(--tomato)',carb:'var(--latte)',veg:'var(--green)',fat:'var(--cupcake)'};
+const SLOTS=['breakfast','lunch','dinner'];
+const SLOT_LABEL={breakfast:'早餐',lunch:'午餐',dinner:'晚餐'};
+const DAY_LABEL=['周一','周二','周三','周四','周五','周六','周日'];
+
+/* ---------- 工具 ---------- */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const round5=n=>Math.round(n/5)*5;
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+function mealKcal(items){return items.reduce((s,it)=>{const f=FOODS[it.id];return s+f.per100.kcal*it.g/100},0)}
+function mealP(items){return items.reduce((s,it)=>{const f=FOODS[it.id];return s+f.per100.p*it.g/100},0)}
+function fmtG(n){return n>=1000?(n/1000).toFixed(n%1000?1:1)+'kg':Math.round(n)+'g'}
+function fmtY(n){return '¥'+(Math.round(n*10)/10).toString().replace(/\.0$/,'')}
+function todayKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function mondayOf(d=new Date()){const x=new Date(d);const w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);x.setHours(0,0,0,0);return x}
+function dayDate(i){const m=mondayOf();m.setDate(m.getDate()+i);return m}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200)}
+
+/* ---------- 状态 ---------- */
+const LS_KEY='renliang-os-v1';
+let S=null;
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}}
+function defaults(){return{
+  onboarded:false,
+  profile:{kcal:2000,protein:130,meals:3,budget:150,
+    likes:{protein:['chicken','beef','shrimp','egg'],carb:['rice','potato','sweetpotato','corn'],veg:['broccoli','carrot','spinach']},
+    dislikes:[],tools:['微波炉','烤箱','电饭煲'],loss:true},
+  plan:null, weekOffset:0,
+  bought:{}, prepDone:{}, portionMode:'A',
+  fridge:[], eaten:{},
+  prepDoneAt:null,
+}}
+
+/* ---------- 计划生成（F03） ---------- */
+function pickLikes(cat){const l=S.profile.likes[cat]&&S.profile.likes[cat].filter(id=>!S.profile.dislikes.includes(id));return (l&&l.length?l:Object.keys(FOODS).filter(k=>FOODS[k].cat===cat))}
+function genPlan(){
+  const prof=S.profile;
+  const prots=pickLikes('protein'), carbs=pickLikes('carb'), vegs=pickLikes('veg');
+  const ldProts=prots.filter(id=>id!=='egg');          // 鸡蛋只做早餐，避免午晚出现小数个蛋
+  const ldPool=ldProts.length?ldProts:prots;
+  const off=S.weekOffset*3; // 每周换一组轮换
+  const days=[];
+  for(let d=0;d<7;d++){
+    const meals={};
+    // 早餐：鸡蛋 + 燕麦
+    const bf=[];
+    if(!prof.dislikes.includes('egg'))bf.push({id:'egg',g:110});
+    if(!prof.dislikes.includes('oats'))bf.push({id:'oats',g:60});
+    else bf.push({id:'rice',g:60});
+    meals.breakfast=bf;
+    // 午/晚：蛋白+碳水+蔬菜+油
+    const p1=ldPool[(d+off)%ldPool.length];let p2=ldPool[(d+1+off)%ldPool.length];
+    if(p2===p1&&ldPool.length>1)p2=ldPool[(d+2+off)%ldPool.length];
+    const c1=carbs[(d+off)%carbs.length],c2=carbs[(d+1+off)%carbs.length];
+    const v1=vegs[d%vegs.length],v2=vegs[(d+1)%vegs.length];
+    meals.lunch=[{id:p1,g:FOODS[p1].portion},{id:c1,g:FOODS[c1].portion},{id:v1,g:FOODS[v1].portion},{id:'oil',g:10}];
+    meals.dinner=[{id:p2,g:FOODS[p2].portion},{id:c2,g:FOODS[c2].portion},{id:v2,g:FOODS[v2].portion},{id:'oil',g:10}];
+    // 蛋白质对齐：调整午/晚蛋白克数（鸡蛋按整颗取整）
+    const wantP=prof.protein;
+    let bp=mealP(meals.breakfast);
+    let ppItems=meals.lunch.filter(it=>FOODS[it.id].cat==='protein').concat(meals.dinner.filter(it=>FOODS[it.id].cat==='protein'));
+    const pPer100=ppItems.reduce((s,it)=>s+FOODS[it.id].per100.p,0);
+    let targetPP=wantP-bp;
+    let factor=clamp(targetPP/pPer100,0.6,1.7);
+    ppItems.forEach(it=>{const f=FOODS[it.id];
+      it.g=f.eggPiece?clamp(Math.round(f.portion*factor/f.eggPiece)*f.eggPiece,f.eggPiece,f.eggPiece*6)
+                    :clamp(round5(f.portion*factor),60,260)});
+    // 热量对齐：把缺口按基础热量占比分配到碳水与油（蛋白质已锁定）
+    const dayKcal0=SLOTS.reduce((s,k)=>s+mealKcal(meals[k]),0);
+    const carbItems=meals.lunch.filter(it=>['carb','fat'].includes(FOODS[it.id].cat))
+      .concat(meals.dinner.filter(it=>['carb','fat'].includes(FOODS[it.id].cat)));
+    const need=prof.kcal-dayKcal0;
+    if(carbItems.length&&Math.abs(need)>20){
+      const baseK=carbItems.map(it=>FOODS[it.id].per100.kcal*FOODS[it.id].portion/100);
+      const baseSum=baseK.reduce((a,b)=>a+b,0)||1;
+      carbItems.forEach((it,i)=>{
+        const addG=need*(baseK[i]/baseSum)/FOODS[it.id].per100.kcal*100;
+        const minG=FOODS[it.id].cat==='fat'?5:50,maxG=FOODS[it.id].cat==='fat'?18:380;
+        it.g=clamp(round5(FOODS[it.id].portion+addG),minG,maxG);
+      });
+    }
+    const day={meals,kcal:SLOTS.reduce((s,k)=>s+mealKcal(meals[k]),0),p:SLOTS.reduce((s,k)=>s+mealP(meals[k]),0)};
+    days.push(day);
+  }
+  S.plan={days,createdAt:Date.now(),weekStart:mondayOf().getTime()};
+}
+/* 每餐克数变化后重算 */
+function recalcDay(d){const day=S.plan.days[d];day.kcal=SLOTS.reduce((s,k)=>s+mealKcal(day.meals[k]),0);day.p=SLOTS.reduce((s,k)=>s+mealP(day.meals[k]),0)}
+
+/* ---------- 采购聚合（F04） ---------- */
+function shopList(){
+  if(!S.plan)return[];
+  const agg={};
+  S.plan.days.forEach(day=>SLOTS.forEach(k=>day.meals[k].forEach(it=>{agg[it.id]=(agg[it.id]||0)+it.g})));
+  const loss=S.profile.loss?1.1:1;
+  return Object.keys(agg).map(id=>{
+    const f=FOODS[id];let qty=agg[id]*loss;
+    let display,unit,count=null;
+    if(f.eggPiece){count=Math.ceil(qty/f.eggPiece);display=count+' 个';unit='个'}
+    else{display=fmtG(Math.round(qty/10)*10);unit='g'}
+    const cost=f.eggPiece?count*(f.price/1000*f.eggPiece):qty/1000*f.price;
+    return{id,name:f.name,cat:f.cat,emoji:f.emoji,qty,display,unit,count,cost};
+  }).sort((a,b)=>b.cost-a.cost);
+}
+function shopTotal(){return shopList().reduce((s,i)=>s+i.cost,0)}
+
+/* ---------- 备餐任务（F05） ---------- */
+function prepTasks(){
+  return shopList().filter(i=>i.cat!=='fat'||true).map(item=>{
+    const f=FOODS[item.id];
+    const n=f.eggPiece?item.count:Math.max(1,Math.round(item.qty/f.portion));
+    const steps=f.steps.map(s=>s.replace('{n}',f.eggPiece?(n+' 个'):(n+' 份')).replace('{g}',f.eggPiece?f.eggPiece:f.portion).replace('{n2}',(item.count||14)+' 个'));
+    const key='task_'+item.id;
+    return{id:item.id,key,name:item.name,emoji:item.emoji,tile:f.tile,total:displayQty(item),count:n,steps};
+  });
+}
+function displayQty(item){return item.display}
+/* 备餐完成 → 生成库存（F07） */
+function completePrepToFreedge(){
+  const tasks=prepTasks();
+  const madeAt=Date.now();
+  S.fridge=[];
+  tasks.forEach(t=>{
+    const f=FOODS[t.id];
+    const item=shopList().find(i=>i.id===t.id);if(!item)return;
+    if(f.eggPiece){
+      S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'chill',grams:item.count*f.eggPiece,portions:item.count,total:item.count,portionLabel:'个',madeAt,eatBy:madeAt+f.fridge*864e5});
+      return;
+    }
+    if(f.cat==='fat'){
+      S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'room',grams:item.qty,portions:item.count,total:item.count,portionLabel:'份',madeAt,eatBy:madeAt+365*864e5});
+      return;
+    }
+    if(f.cat==='carb'&&(t.id==='rice'||t.id==='oats')){
+      S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'chill',grams:item.qty,portions:t.count,total:t.count,portionLabel:'份',madeAt,eatBy:madeAt+3*864e5});
+      return;
+    }
+    // 冷藏 Day1-3 + 冷冻 Day4-7 双区拆分（PRD Step7）
+    const chillDays=Math.min(3,f.fridge||3);
+    const chillPortions=chillDays, rest=t.count-chillDays;
+    if(chillPortions>0)S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'chill',grams:chillPortions*f.portion,portions:chillPortions,total:t.count,portionLabel:'份',madeAt,eatBy:madeAt+chillDays*864e5});
+    if(rest>0)S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'freeze',grams:rest*f.portion,portions:rest,total:t.count,portionLabel:'份',madeAt,eatBy:madeAt+f.freezer*864e5});
+  });
+  S.prepDoneAt=madeAt;
+  save();
+}
+/* 吃掉一餐（Step9） */
+function eatMeal(dayIdx,slot){
+  if(!S.plan)return;
+  const day=S.plan.days[dayIdx!==undefined?dayIdx:todayIdx()];
+  const key=todayKey();
+  S.eaten[key]=S.eaten[key]||{slots:{}};
+  if(S.eaten[key].slots[slot])return;
+  const items=day.meals[slot];
+  const kcal=mealKcal(items),p=mealP(items);
+  S.eaten[key].slots[slot]={kcal,p,at:Date.now()};
+  // 库存扣减
+  const warn=[];
+  items.forEach(it=>{
+    const f=FOODS[it.id];
+    const need=f.eggPiece?2:1;
+    const inv=S.fridge.filter(v=>v.id===it.id&&v.portions>0).sort((a,b)=>(a.zone==='chill'?-1:1));
+    let left=need;
+    inv.forEach(v=>{if(left<=0)return;const take=Math.min(left,v.portions);v.portions-=take;left-=take});
+    if(left>0)warn.push(f.name);
+  });
+  save();
+  toast(warn.length?('已记录 ✓（库存不足：'+warn.join('、')+'）'):'已吃掉 ✓ 库存已更新');
+  renderAll();
+}
+
+/* ---------- 演示数据 ---------- */
+const Demo={
+  load(){
+    S=defaults();
+    S.onboarded=true;
+    genPlan();
+    S.bought=Object.fromEntries(shopListIds());
+    // 备餐已完成 5/8，前 5 项入库
+    const tasks=prepTasks();
+    tasks.slice(0,5).forEach(t=>S.prepDone[t.key]=true);
+    completePrepToFreedge();
+    // 把未完成任务还原（completePrepToFreedge 会清空 fridge，需重演）：
+    S.fridge=[];S.prepDoneAt=null;
+    tasks.forEach(t=>{
+      if(!S.prepDone[t.key])return;
+      const f=FOODS[t.id];
+      const item=shopList().find(i=>i.id===t.id);if(!item)return;
+      const madeAt=Date.now()-36e5;
+      if(f.eggPiece){S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'chill',grams:item.count*f.eggPiece,portions:item.count,total:item.count,portionLabel:'个',madeAt,eatBy:madeAt+f.fridge*864e5});return}
+      if(f.cat==='fat'){S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'room',grams:item.qty,portions:item.count,total:item.count,portionLabel:'份',madeAt,eatBy:madeAt+365*864e5});return}
+      if(f.cat==='carb'&&(t.id==='rice'||t.id==='oats')){S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'chill',grams:item.qty,portions:t.count,total:t.count,portionLabel:'份',madeAt,eatBy:madeAt+3*864e5});return}
+      const chillPortions=Math.min(3,t.count),rest=t.count-chillPortions;
+      if(chillPortions>0)S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'chill',grams:chillPortions*f.portion,portions:chillPortions,total:t.count,portionLabel:'份',madeAt,eatBy:madeAt+Math.min(3,f.fridge||3)*864e5});
+      if(rest>0)S.fridge.push({id:t.id,name:t.name,emoji:t.emoji,zone:'freeze',grams:rest*f.portion,portions:rest,total:t.count,portionLabel:'份',madeAt,eatBy:madeAt+f.freezer*864e5});
+    });
+    S.prepDoneAt=Date.now()-36e5;
+    // 早餐已吃
+    const tk=todayKey();
+    S.eaten[tk]={slots:{breakfast:{kcal:mealKcal(S.plan.days[todayIdx()].meals.breakfast),p:mealP(S.plan.days[todayIdx()].meals.breakfast),at:Date.now()}}};
+    save();
+    go('today');
+    toast('演示数据已载入：本周计划 + 备餐 5/8 + 冰箱在库');
+  },
+  reset(){localStorage.removeItem(LS_KEY);S=defaults();save();go('onboarding');renderAll()}
+};
+function shopListIds(){if(!S.plan)return[];return shopList().map(i=>[i.id,true])}
+function todayIdx(){return (new Date().getDay()+6)%7}
+
+/* ============================================================
+   视图渲染
+   ============================================================ */
+let route='today';
+function go(r){route=r;location.hash=r;renderAll();window.scrollTo({top:0,behavior:'instant'})}
+
+function renderAll(){
+  // nav active
+  $$('#mainNav button,.tabbar button').forEach(b=>{
+    const n=b.dataset.nav;
+    const on=(n===route)||(route==='generate'&&n==='week')||(route==='shopping'&&n==='prep')||(route==='onboarding'&&false);
+    b.classList.toggle('active',on);
+  });
+  $$('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+route));
+  $('#chipDate').textContent=(new Date().getMonth()+1)+'月'+new Date().getDate()+'日 · '+DAY_LABEL[todayIdx()];
+  // 视图分发
+  if(route==='onboarding')renderOnboarding();
+  if(route==='today')renderToday();
+  if(route==='generate')renderGenerate();
+  if(route==='week')renderWeek();
+  if(route==='shopping')renderShopping();
+  if(route==='prep')renderPrep();
+  if(route==='fridge')renderFridge();
+  if(route==='settings')renderSettings();
+}
+
+/* ---------- Onboarding 向导 ---------- */
+const Wiz={
+  step:0,draft:null,
+  start(){this.draft=JSON.parse(JSON.stringify(S.profile));this.step=0;$('#wizBox').style.display='block';$('#wizIdle').style.display='none';this.render();$('#wizBox').scrollIntoView({behavior:'smooth',block:'center'})},
+  render(){
+    const d=this.draft;
+    $('#wizSteps').innerHTML=[0,1,2].map(i=>'<div class="step'+(i<=this.step?' on':'')+'"></div>').join('');
+    const titles=['你的目标','喜欢吃的','就绪'];
+    let html='<div class="eyebrow" style="margin-bottom:6px">Step '+(this.step+1)+' / 3 · '+titles[this.step]+'</div>';
+    if(this.step===0){
+      html+='<div class="wiz-q">每天吃几顿？目标热量和蛋白质是多少？</div>'
+      +'<div class="field" style="margin-top:16px"><label>每日餐数</label><div class="seg" id="segMeals">'
+      +[2,3,4].map(n=>'<button class="'+(d.meals===n?'on':'')+'" '+(n!==3?'disabled style="opacity:.4" title="V0.1 支持早/午/晚三餐制，两餐与加餐在 P1 支持"':'')+' onclick="Wiz.set(\'meals\','+n+')">'+n+' 餐</button>').join('')+'</div><div class="hint">V0.1 支持早 / 午 / 晚三餐制；两餐与加餐制在 P1 支持。</div></div>'
+      +'<div class="field"><label>每日目标热量 <span class="num">'+d.kcal+'</span> kcal</label>'
+      +'<input type="range" min="1200" max="3200" step="50" value="'+d.kcal+'" style="width:100%;accent-color:var(--orange)" oninput="Wiz.set(\'kcal\',+this.value)"></div>'
+      +'<div class="field"><label>每日蛋白质 <span class="num">'+d.protein+'</span> g</label>'
+      +'<input type="range" min="60" max="220" step="5" value="'+d.protein+'" style="width:100%;accent-color:var(--orange)" oninput="Wiz.set(\'protein\',+this.value)"></div>'
+      +'<div class="field"><label>每周预算 <span class="num">¥'+d.budget+'</span></label>'
+      +'<input type="range" min="60" max="400" step="10" value="'+d.budget+'" style="width:100%;accent-color:var(--orange)" oninput="Wiz.set(\'budget\',+this.value)"></div>'
+      +'<div class="small">系统不提供医疗建议；如有特殊健康状况请遵医嘱。</div>';
+    }else if(this.step===1){
+      html+='<div class="wiz-q">喜欢哪些食材？选中的才会进入下周计划。</div>';
+      ['protein','carb','veg'].forEach(cat=>{
+        html+='<div class="field" style="margin-top:14px"><label>'+CAT_LABEL[cat]+'</label><div class="food-grid">'
+        +Object.keys(FOODS).filter(k=>FOODS[k].cat===cat).map(id=>{
+          const f=FOODS[id];const on=d.likes[cat].includes(id)&&!d.dislikes.includes(id);
+          return '<button class="food-chip'+(on?' on':'')+'" onclick="Wiz.toggle(\''+cat+'\',\''+id+'\')">'
+          +'<span class="tile sm '+f.tile+'" style="width:40px;height:40px;font-size:20px">'+f.emoji+'</span>'
+          +'<span><span class="nm">'+f.name+'</span><br><span class="meta">'+f.per100.kcal+'kcal/100g · ¥'+f.price+'/kg</span></span>'
+          +'<span class="check-dot">✓</span></button>';
+        }).join('')+'</div></div>';
+      });
+    }else{
+      html+='<div class="wiz-q">配置完成 ✓</div>'
+      +'<div class="gen-result">'
+      +'<div class="gr"><div class="v num">'+d.kcal+'</div><div class="k">kcal / 天</div></div>'
+      +'<div class="gr"><div class="v num">'+d.protein+'g</div><div class="k">蛋白质 / 天</div></div>'
+      +'<div class="gr"><div class="v num">'+d.meals+' 餐</div><div class="k">每日</div></div>'
+      +'<div class="gr"><div class="v num">¥'+d.budget+'</div><div class="k">预算 / 周</div></div>'
+      +'<div class="gr"><div class="v num">'+(d.likes.protein.length+d.likes.carb.length+d.likes.veg.length)+'</div><div class="k">已选食材</div></div>'
+      +'</div>'
+      +'<p class="body-l">点击「生成第一周人粮」，系统将输出：7 天餐次组合 · 聚合采购单 · 周末备餐任务 · 分装与保存策略。</p>';
+    }
+    $('#wizBody').innerHTML=html;
+    $('#wizNext').textContent=this.step===2?'生成第一周人粮 →':'下一步';
+    $('#wizNext').disabled=(this.step===1&&this.countLikes()<6);
+  },
+  countLikes(){const d=this.draft;return d.likes.protein.length+d.likes.carb.length+d.likes.veg.length},
+  set(k,v){this.draft[k]=v;this.render()},
+  toggle(cat,id){
+    const L=this.draft.likes[cat];const i=L.indexOf(id);
+    if(i>=0){L.splice(i,1);if(!this.draft.dislikes.includes(id))this.draft.dislikes.push(id)}
+    else{L.push(id);const di=this.draft.dislikes.indexOf(id);if(di>=0)this.draft.dislikes.splice(di,1);
+      // 同类中至少保留 2 个
+      if(L.length<2){L.push(id)}}
+    this.render();
+  },
+  next(){
+    if(this.step<2){this.step++;this.render();return}
+    S.profile=JSON.parse(JSON.stringify(this.draft));
+    S.onboarded=true;genPlan();save();
+    go('week');
+    toast('第一周人粮已生成 ✓ 去采购 → 备餐 → 开吃');
+  },
+  prev(){if(this.step>0){this.step--;this.render()}else{$('#wizBox').style.display='none';$('#wizIdle').style.display='block'}}
+};
+function renderOnboarding(){}
+
+/* ---------- Today ---------- */
+function renderToday(){
+  const sub=$('#todaySub');
+  const d=new Date();
+  sub.textContent='周'+DAY_LABEL[todayIdx()].slice(1)+' · '+todayKey();
+  const body=$('#todayBody');
+  if(!S.plan){body.innerHTML='<div class="card empty"><div class="big">🍽️</div>还没有本周计划。<br><br><button class="btn btn-primary btn-sm" data-nav="generate">生成一周人粮</button></div>';return}
+  const ti=todayIdx(),day=S.plan.days[ti];
+  const key=todayKey();const eaten=(S.eaten[key]&&S.eaten[key].slots)||{};
+  // 下一餐
+  const nextSlot=SLOTS.find(k=>!eaten[k]);
+  let nextHtml='';
+  if(nextSlot){
+    const items=day.meals[nextSlot];
+    const kcal=mealKcal(items),p=mealP(items);
+    const reheats=items.map(it=>FOODS[it.id]).filter(f=>f.reheatHint);
+    nextHtml='<div class="next-meal">'
+      +'<div class="head"><span class="tile '+FOODS[items[0].id].tile+'" style="font-size:26px">'+(nextSlot==='breakfast'?'🌅':nextSlot==='lunch'?'☀️':'🌙')+'</span>'
+      +'<div><div class="eyebrow">下一餐</div><div style="font-size:20px;font-weight:900">'+SLOT_LABEL[nextSlot]+'</div></div>'
+      +'<div style="margin-left:auto;text-align:right"><div class="num" style="font-size:22px">'+Math.round(kcal)+' kcal</div><div class="small">蛋白质 <span class="num">'+Math.round(p)+'g</span></div></div></div>'
+      +'<div class="body">'
+      +'<div class="meal-items">'+items.map(it=>{const f=FOODS[it.id];return '<div class="meal-item"><span class="tile sm '+f.tile+'">'+f.emoji+'</span><span style="font-weight:600">'+f.name+'</span><span class="g num">'+(f.eggPiece?(Math.round(it.g/f.eggPiece*10)/10+' 个'):Math.round(it.g)+'g')+'</span></div>'}).join('')+'</div>'
+      +'<div class="macro-row"><div class="m"><div class="lbl">复热</div><div class="v" style="font-size:14px;font-weight:600">'+(nextSlot==='breakfast'?'鸡蛋即食 · 燕麦热水冲泡':'微波炉 800W · 4 分钟')+'</div></div></div>'
+      +'<div style="margin-top:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="small">推荐调味：</span><span class="tag">油泼辣子</span><span class="tag">黑胡椒</span><span class="tag">泰式酸辣汁</span></div>'
+      +'<button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="eatToday(\''+nextSlot+'\')">吃掉了 ✓</button>'
+      +'</div></div>';
+  }else{
+    nextHtml='<div class="card"><div class="empty"><div class="big">✅</div><b>今天三餐全部完成</b><br>明日早餐已就绪，无需思考。</div></div>';
+  }
+  // 今日进度
+  const doneKcal=Object.values(eaten).reduce((s,m)=>s+m.kcal,0);
+  const doneP=Object.values(eaten).reduce((s,m)=>s+m.p,0);
+  const pctK=clamp(doneKcal/S.profile.kcal*100,0,100),pctP=clamp(doneP/S.profile.protein*100,0,100);
+  // 备餐进度
+  const tasks=prepTasks();const doneN=tasks.filter(t=>S.prepDone[t.key]).length;
+  const rows=SLOTS.map(k=>{
+    const items=day.meals[k];const isDone=!!eaten[k];
+    const isNext=k===nextSlot;
+    return '<div class="meal-row"><span class="tag'+(isDone?' green':isNext?' ink':'')+'">'+SLOT_LABEL[k]+(isDone?' · 已吃':'')+'</span>'
+      +'<span class="what">'+items.map(it=>{const f=FOODS[it.id];return f.name+' '+(f.eggPiece?Math.round(it.g/f.eggPiece*10)/10+'个':Math.round(it.g)+'g')}).join(' + ')+'</span>'
+      +'<span class="kc num">'+Math.round(mealKcal(items))+' kcal</span></div>';
+  }).join('');
+  body.innerHTML='<div class="today-grid"><div>'+nextHtml+'</div>'
+    +'<div><div class="card kpi-card"><div class="kpi-head"><span style="font-weight:800">今日热量</span><span class="v num">'+Math.round(doneKcal)+'<small> / '+S.profile.kcal+' kcal</small></span></div><div class="bar orange"><i style="width:'+pctK+'%"></i></div></div>'
+    +'<div class="card kpi-card"><div class="kpi-head"><span style="font-weight:800">今日蛋白质</span><span class="v num">'+Math.round(doneP)+'<small> / '+S.profile.protein+' g</small></span></div><div class="bar green"><i style="width:'+pctP+'%"></i></div></div>'
+    +'<div class="card kpi-card"><div class="kpi-head"><span style="font-weight:800">本周备餐</span><span class="v num">'+doneN+'<small> / '+tasks.length+' 任务</small></span></div><div class="bar"><i style="width:'+(tasks.length?doneN/tasks.length*100:0)+'%"></i></div>'
+    +'<div style="margin-top:12px"><button class="link-strong" data-nav="prep" style="background:none;font-size:13px">去周末备餐 →</button></div></div>'
+    +'<div class="card card-pad" style="margin-top:16px"><div style="font-weight:800;margin-bottom:4px">今日三餐</div>'+rows+'</div></div></div>';
+}
+function eatToday(slot){eatMeal(todayIdx(),slot)}
+
+/* ---------- 生成一周计划 ---------- */
+const Gen={step:0,busy:false,
+  render(){
+    $('#genSteps').innerHTML=[0,1,2].map(i=>'<div class="step'+(i<=this.step?' on':'')+'"></div>').join('');
+    $('#genMealsN').textContent=S.profile.meals;
+    const b=$('#genBody');
+    if(this.step===0){
+      b.innerHTML='<div class="wiz-q">① 确认目标</div>'
+      +'<div class="gen-result" style="margin-top:16px">'
+      +'<div class="gr"><div class="v num">'+S.profile.kcal+'</div><div class="k">kcal / 天</div></div>'
+      +'<div class="gr"><div class="v num">'+S.profile.protein+'g</div><div class="k">蛋白质 / 天</div></div>'
+      +'<div class="gr"><div class="v num">'+S.profile.meals+' 餐</div><div class="k">每日餐数</div></div>'
+      +'<div class="gr"><div class="v num">¥'+S.profile.budget+'</div><div class="k">预算 / 周</div></div></div>'
+      +'<button class="btn btn-ghost btn-sm" data-nav="settings">修改目标 →</button>';
+    }else if(this.step===1){
+      const cats=['protein','carb','veg'];
+      b.innerHTML='<div class="wiz-q">② 本周食材池</div><p class="small" style="margin:4px 0 14px">来自「我的」偏好设置，可点右下角去调整。</p>'
+      +cats.map(cat=>'<div style="margin-bottom:12px"><span class="tag">'+CAT_LABEL[cat]+'</span> <b style="margin-left:6px">'+(S.profile.likes[cat].map(id=>FOODS[id].name).join(' · ')||'默认全选')+'</b></div>').join('')
+      +'<div style="margin-top:16px"><button class="btn btn-ghost btn-sm" data-nav="settings">调整食材偏好 →</button></div>';
+    }else{
+      if(this.busy){
+        b.innerHTML='<div class="wiz-q">③ 正在计算…</div><div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">'
+        +'<div class="skeleton" style="width:80%"></div><div class="skeleton" style="width:65%"></div><div class="skeleton" style="width:72%"></div><div class="skeleton" style="width:40%"></div></div>';
+        setTimeout(()=>{this.busy=false;this.done=true;this.render()},900);
+        return;
+      }
+      if(this.done){
+        const list=shopList();const total=shopTotal();
+        const over=total>S.profile.budget;
+        b.innerHTML='<div class="wiz-q">③ 生成完成 ✓</div>'
+        +'<div class="gen-result">'
+        +'<div class="gr"><div class="v num">7 天</div><div class="k">× '+S.profile.meals+' 餐</div></div>'
+        +'<div class="gr"><div class="v num">'+list.length+' 项</div><div class="k">聚合采购</div></div>'
+        +'<div class="gr"><div class="v num" style="color:'+(over?'var(--red)':'var(--green)')+'">'+fmtY(total)+'</div><div class="k">预估花费 / 预算 ¥'+S.profile.budget+'</div></div>'
+        +'<div class="gr"><div class="v num">'+prepTasks().length+'</div><div class="k">备餐任务</div></div></div>'
+        +(over?'<div class="tag red" style="margin-bottom:14px">超出预算 '+fmtY(total-S.profile.budget)+' · 可在 AI 指令里输入「预算降到 ¥'+S.profile.budget+'」让系统换便宜的蛋白</div>':'<div class="tag green" style="margin-bottom:14px">在预算内 ✓</div>')
+        +'<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" data-nav="week">查看本周计划 →</button>'
+        +'<button class="btn btn-ghost" data-nav="shopping">先看采购单</button></div>';
+      }else{
+        b.innerHTML='<div class="wiz-q">③ 生成</div><p class="body-l" style="margin:10px 0 16px">点击开始，系统将组合 7 天 × '+S.profile.meals+' 餐，并对齐热量 / 蛋白质 / 预算。</p>'
+        +'<button class="btn btn-primary" onclick="Gen.run()">开始生成</button>';
+      }
+    }
+  },
+  run(){this.busy=true;this.render()},
+  reset(){this.step=2;this.done=false;this.busy=false;this.render()}
+};
+function renderGenerate(){
+  Gen.step=Gen.step||0;
+  if(route==='generate'&&Gen.step===0&&!Gen._inited){Gen._inited=true}
+  Gen.render();
+}
+
+/* ---------- AI 入口 ---------- */
+const AI={
+  swapChicken(){
+    if(!S.plan){toast('先生成本周计划');return}
+    if(!S.profile.likes.protein.includes('beef')){toast('食材池里没有替代蛋白，请先在「我的」里勾选');return}
+    S.profile.dislikes.push('chicken');
+    const L=S.profile.likes.protein;const i=L.indexOf('chicken');if(i>=0)L.splice(i,1);
+    genPlan();save();go('generate');Gen.step=2;Gen.done=false;Gen.busy=true;Gen.render();
+    toast('已把鸡胸肉换出食材池，正在重新计算…');
+  },
+  budget120(){
+    if(!S.plan){toast('先生成本周计划');return}
+    S.profile.budget=120;
+    // 贵价蛋白（牛肉/虾仁）先移出，直到预估花费 ≤ 预算
+    const tryFits=()=>{
+      for(let guard=0;guard<6;guard++){
+        genPlan();
+        if(shopTotal()<=S.profile.budget)return true;
+        const expensive=['beef','shrimp'].find(id=>S.profile.likes.protein.includes(id));
+        if(!expensive)return false;
+        S.profile.likes.protein=S.profile.likes.protein.filter(x=>x!==expensive);
+        S.profile.dislikes.push(expensive);
+      }
+      return false;
+    };
+    const ok=tryFits();save();
+    go('generate');Gen.step=2;Gen.done=true;Gen.busy=false;Gen.render();
+    toast(ok?'已压到预算内 ✓ 部分高价蛋白已替换':'预算太紧，已尽力优化（仍超 ¥ 一点）');
+  },
+  regenerate(){
+    S.weekOffset++;genPlan();save();
+    go('generate');Gen.step=2;Gen.done=false;Gen.busy=true;Gen.render();
+    toast('下周轮换已就绪，正在计算…');
+  }
+};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.activeElement&&document.activeElement.id==='aiInput'){
+    const v=$('#aiInput').value.trim();
+    if(!v)return;
+    if(/鸡胸/.test(v))AI.swapChicken();
+    else if(/预算|便宜|贵/.test(v))AI.budget120();
+    else if(/生成|下周/.test(v))AI.regenerate();
+    else{toast('演示版支持：换鸡胸肉 / 降预算 / 生成下周');return}
+    $('#aiInput').value='';
+  }
+});
+
+/* ---------- 本周 ---------- */
+function renderWeek(){
+  const body=$('#weekBody');
+  if(!S.plan){body.innerHTML='<div class="card empty"><div class="big">📅</div>还没有计划。<br><br><button class="btn btn-primary btn-sm" data-nav="generate">生成一周人粮</button></div>';return}
+  $('#weekSub').textContent='周计划生成于 '+new Date(S.plan.createdAt).toLocaleDateString('zh-CN')+' · 点击任意一餐微调';
+  const list=shopList();const total=shopTotal();const over=total>S.profile.budget;
+  $('#weekBadges').innerHTML='<span class="tag">日均 <b class="num">'+Math.round(S.plan.days.reduce((s,d)=>s+d.kcal,0)/7)+'</b> kcal</span>'
+    +'<span class="tag">日均蛋白 <b class="num">'+Math.round(S.plan.days.reduce((s,d)=>s+d.p,0)/7)+'</b> g</span>'
+    +'<span class="tag '+(over?'red':'green')+'">预估采购 '+fmtY(total)+' / 预算 ¥'+S.profile.budget+'</span>';
+  const ti=todayIdx();
+  body.innerHTML='<div class="week-grid">'+S.plan.days.map((day,i)=>{
+    const isToday=i===ti;
+    return '<div class="day-col'+(isToday?' today-col':'')+'">'
+    +'<div class="day-head"><div class="dn">'+DAY_LABEL[i]+(isToday?' · 今天':'')+'</div>'
+    +'<div class="sum num">'+Math.round(day.kcal)+' kcal · '+Math.round(day.p)+'g 蛋白</div></div>'
+    +SLOTS.map(k=>{const items=day.meals[k];
+      return '<div class="wcell" onclick="Modal.meal('+i+',\''+k+'\')"><div class="slot">'+SLOT_LABEL[k]+'</div>'
+      +items.map(it=>{const f=FOODS[it.id];return '<div class="it">'+f.emoji+' '+f.name+' <b class="num">'+(f.eggPiece?Math.round(it.g/f.eggPiece*10)/10+'个':Math.round(it.g)+'g')+'</b></div>'}).join('')
+      +'<div class="kc num">'+Math.round(mealKcal(items))+' kcal</div></div>'}).join('')
+    +'</div>';
+  }).join('')+'</div>';
+}
+
+/* ---------- 购物清单 ---------- */
+function renderShopping(){
+  const body=$('#shopBody');
+  if(!S.plan){body.innerHTML='<div class="card empty"><div class="big">🛒</div>先生成本周计划。</div>';return}
+  $('#lossToggle').checked=S.profile.loss;
+  const list=shopList();const total=shopTotal();const over=total>S.profile.budget;
+  const cats=['protein','carb','veg','fat'];
+  const boughtN=list.filter(i=>S.bought[i.id]).length;
+  body.innerHTML='<div class="shop-grid"><div>'
+  +cats.map(cat=>{
+    const items=list.filter(i=>i.cat===cat);if(!items.length)return '';
+    return '<div class="shop-cat"><div class="cat-head"><span class="tag" style="background:'+CAT_COLOR[cat]+'1f;color:'+CAT_COLOR[cat]+'">'+CAT_LABEL[cat]+'</span><span class="small">'+items.length+' 项</span></div>'
+    +'<div class="card">'+items.map(i=>'<div class="shop-item'+(S.bought[i.id]?' bought':'')+'" onclick="App.toggleBought(\''+i.id+'\')">'
+      +'<span class="cbox'+(S.bought[i.id]?' done':'')+'">✓</span><span class="tile sm '+FOODS[i.id].tile+'" style="width:36px;height:36px;font-size:18px">'+i.emoji+'</span>'
+      +'<span class="nm">'+i.name+'</span><span class="qty num">'+i.display+'</span><span class="cost num">'+fmtY(i.cost)+'</span></div>').join('')+'</div></div>';
+  }).join('')
+  +'</div><div>'
+  +'<div class="card card-pad"><div style="font-weight:800;font-size:16px;margin-bottom:10px">预估花费</div>'
+  +'<div class="num" style="font-size:34px;font-weight:800">'+fmtY(total)+'</div>'
+  +'<div class="small" style="margin:2px 0 14px">预算 ¥'+S.profile.budget+' / 周'+(over?' · <b style="color:var(--red)">超 '+fmtY(total-S.profile.budget)+'</b>':' · <b style="color:var(--green)">在预算内 ✓</b>')+'</div>'
+  +'<div class="bar '+(over?'':'green')+'"><i style="width:'+clamp(total/S.profile.budget*100,0,100)+'%"></i></div>'
+  +'<div class="small" style="margin-top:14px">已勾选 <b class="num">'+boughtN+'</b> / '+list.length+' 项</div>'
+  +'<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">'
+  +(boughtN<list.length?'<button class="btn btn-ghost btn-sm" onclick="App.buyAll()">全选已买</button>':'')
+  +'<button class="btn btn-ghost btn-sm" onclick="App.clearBought()">清空勾选</button></div>'
+  +'</div>'
+  +'<div class="card card-pad" style="margin-top:16px"><div style="font-weight:800;margin-bottom:8px">份量口径</div>'
+  +'<div class="small" style="line-height:19px">肉类 / 蔬菜按<b>生重</b>计；大米为生米重，每 90g 约煮出 200g 熟饭；鸡蛋按个数聚合。已'+(S.profile.loss?'包含':'未包含')+' 10% 损耗。</div></div>'
+  +'</div></div>';
+}
+
+/* ---------- 备餐 ---------- */
+function renderPrep(){
+  const body=$('#prepBody');
+  $('#modeToggle').innerHTML=['A','B'].map(m=>'<button class="'+(S.portionMode===m?'on':'')+'" onclick="App.setMode(\''+m+'\')">模式 '+m+' · '+(m==='A'?'提前装盒':'散装称重')+'</button>').join('');
+  if(!S.plan){body.innerHTML='<div class="card empty"><div class="big">🔪</div>先生成本周计划。</div>';return}
+  const tasks=prepTasks();const doneN=tasks.filter(t=>S.prepDone[t.key]).length;
+  let html='<div class="card card-pad" style="margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">'
+    +'<div style="flex:1;min-width:220px"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><b>本周生产进度</b><span class="num">'+doneN+' / '+tasks.length+' 任务</span></div><div class="bar orange"><i style="width:'+(tasks.length?doneN/tasks.length*100:0)+'%"></i></div></div>'
+    +'<button class="btn btn-primary btn-sm" onclick="App.finishAllPrep()"'+(doneN===tasks.length?' disabled':'')+'>全部完成 → 一键入库</button></div>';
+  html+=tasks.map((t,ti)=>{
+    const done=!!S.prepDone[t.key];
+    const stepsDone=t.steps.filter((s,si)=>S.prepDone[t.key+'_'+si]).length;
+    const pct=done?100:Math.round(stepsDone/t.steps.length*100);
+    let s='<div class="card prep-task"><div class="head">'
+    +'<span class="tile '+t.tile+'">'+t.emoji+'</span>'
+    +'<div style="flex:1;min-width:0"><div class="tt">Task '+String(ti+1).padStart(2,'0')+' · '+t.name+' <span class="num">'+t.total+'</span></div>'
+    +'<div class="meta">分成 '+t.count+' '+(FOODS[t.id].eggPiece?'个':'份')+' · 每份 '+(FOODS[t.id].eggPiece?'2 个':FOODS[t.id].portion+'g')+'</div></div>'
+    +'<button class="cbox'+(done?' done':'')+'" style="width:28px;height:28px;border-radius:50%" onclick="App.toggleTask(\''+t.key+'\')" aria-label="完成任务">✓</button></div>'
+    +'<div class="body">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px"><div class="bar thin" style="flex:1"><i style="width:'+pct+'%;background:'+(done?'var(--green)':'var(--ink)')+'"></i></div><span class="small num">'+pct+'%</span></div>'
+    +'<div class="steps-list">'+t.steps.map((st,si)=>{
+      const sd=done||!!S.prepDone[t.key+'_'+si];
+      return '<div class="step-row'+(sd?' done':'')+'" onclick="App.toggleStep(\''+t.key+'\','+si+')"><span class="cbox'+(sd?' done':'')+'" style="width:18px;height:18px;font-size:10px">✓</span><span class="txt">'+esc(st)+'</span></div>';
+    }).join('')+'</div>';
+    if(!done&&S.portionMode==='A'){
+      s+='<div style="margin-top:12px"><div class="eyebrow" style="margin-bottom:6px">装盒预览 · 模式 A</div><div class="box-preview">'
+      +Array.from({length:Math.min(t.count,4)}).map((_,bi)=>'<div class="box-card"><div class="bn">'+(FOODS[t.id].eggPiece?'蛋盒':'盒 '+String(bi+1).padStart(2,'0'))+'</div><div class="bi">'+t.name+' '+(FOODS[t.id].eggPiece?'2 个':FOODS[t.id].portion+'g')+'</div><div class="bi muted">+</div><div class="bi">'+(FOODS[t.id].cat==='carb'?'蛋白 / 蔬菜见分装单':'主食 / 蔬菜见分装单')+'</div></div>').join('')
+      +(t.count>4?'<div class="box-card" style="display:flex;align-items:center;justify-content:center;color:var(--ink-soft)">… 共 '+t.count+' '+(FOODS[t.id].eggPiece?'个':'盒')+'</div>':'')
+      +'</div></div>';
+    }
+    if(!done&&S.portionMode==='B'){
+      s+='<div style="margin-top:12px" class="tag aubergine">模式 B：全部散装冷冻，每餐开袋称重 '+(FOODS[t.id].eggPiece?t.count+' 个':FOODS[t.id].portion+'g')+'</div>';
+    }
+    s+='</div></div>';
+    return s;
+  }).join('');
+  html+='<div class="small" style="margin-top:8px">完成全部任务后点「一键入库」，系统将按 <b>冷藏 Day1-3 / 冷冻 Day4-7</b> 自动写入冰箱。</div>';
+  body.innerHTML=html;
+}
+
+/* ---------- 冰箱 ---------- */
+let zoneFilter='all';
+function renderFridge(){
+  const tabs=[['all','全部',S.fridge.length],['chill','冷藏',S.fridge.filter(i=>i.zone==='chill').length],['freeze','冷冻',S.fridge.filter(i=>i.zone==='freeze').length],['room','常温',S.fridge.filter(i=>i.zone==='room').length]];
+  $('#zoneTabs').innerHTML=tabs.map(z=>'<button class="'+(zoneFilter===z[0]?'on':'')+'" onclick="App.setZone(\''+z[0]+'\')">'+z[1]+' <b class="num">'+z[2]+'</b></button>').join('');
+  const body=$('#fridgeBody');
+  let items=zoneFilter==='all'?S.fridge:S.fridge.filter(i=>i.zone===zone);
+  if(!items.length){
+    body.innerHTML='<div class="card empty"><div class="big">🧊</div>冰箱是空的。<br>完成「周末备餐」任务后，库存会自动写入这里。<br><br><button class="btn btn-ghost btn-sm" data-nav="prep">去备餐 →</button></div>';
+    return;
+  }
+  const now=Date.now();
+  body.innerHTML='<div class="fridge-grid">'+items.map((v,vi)=>{
+    const daysLeft=Math.ceil((v.eatBy-now)/864e5);
+    const zoneTag=v.zone==='chill'?'<span class="tag blue">冷藏</span>':v.zone==='freeze'?'<span class="tag aubergine">❄ 冷冻</span>':'<span class="tag">常温</span>';
+    const state=daysLeft<0?'<span class="tag red">已过期</span>':daysLeft<=1?'<span class="tag orange">临期</span>':'<span class="tag green">安全</span>';
+    const pct=v.total?v.portions/v.total*100:0;
+    return '<div class="card fridge-card"><div class="top"><span class="tile sm '+FOODS[v.id].tile+'">'+v.emoji+'</span>'
+    +'<div><div class="nm">'+v.name+'</div><div class="small">'+(v.portionLabel==='个'?'每餐 2 个':'每份 '+FOODS[v.id].portion+'g')+'</div></div>'+zoneTag+'</div>'
+    +'<div class="rows">'
+    +'<span>剩余 <b class="num">'+v.portions+'</b> / '+v.total+' '+v.portionLabel+'（<b class="num">'+fmtG(v.grams*(v.total?v.portions/v.total:0))+'</b>）</span>'
+    +'<span>制作 <b>'+new Date(v.madeAt).toLocaleDateString('zh-CN')+'</b> · 保质期至 <b>'+new Date(v.eatBy).toLocaleDateString('zh-CN')+'</b></span>'
+    +'</div>'
+    +'<div class="bar thin" style="margin-bottom:12px"><i style="width:'+pct+'%;background:'+(v.zone==='freeze'?'var(--aubergine)':'var(--blue)')+'"></i></div>'
+    +'<div class="foot">'+state+'<button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="App.consume('+vi+')"'+(v.portions<=0?' disabled':'')+'>吃掉一份</button></div></div>';
+  }).join('')+'</div>'
+  +'<div class="card card-pad" style="margin-top:20px"><div style="font-weight:800;margin-bottom:6px">保存策略（F07 · StorageRule）</div>'
+  +'<div class="small" style="line-height:20px">熟制肉类：<b>冷藏 ≤3 天</b>，超过部分转冷冻（≤90 天）；绿叶菜焯水后冷藏 ≤3 天；生鸡蛋冷藏 ≤14 天；解冻后请勿二次冷冻。制作 / 冷冻 / 预计食用日期均已在卡片记录。</div></div>';
+}
+
+/* ---------- 设置 ---------- */
+function renderSettings(){
+  const p=S.profile;
+  const body=$('#setBody');
+  body.innerHTML='<div class="set-grid">'
+  +'<div class="card card-pad"><div class="h3" style="margin-bottom:16px">身体目标（F01）</div>'
+  +'<div class="form-row"><div class="field"><label>目标热量 kcal/天</label><input class="input num" type="number" value="'+p.kcal+'" onchange="App.setProfile(\'kcal\',+this.value)"></div>'
+  +'<div class="field"><label>蛋白质 g/天</label><input class="input num" type="number" value="'+p.protein+'" onchange="App.setProfile(\'protein\',+this.value)"></div></div>'
+  +'<div class="form-row"><div class="field"><label>每日餐数</label><div class="seg">'+[2,3,4].map(n=>'<button class="'+(p.meals===n?'on':'')+'" '+(n!==3?'disabled style="opacity:.4" title="V0.1 支持三餐制"':'')+' onclick="App.setProfile(\'meals\','+n+')">'+n+'</button>').join('')+'</div><div class="hint">V0.1 支持三餐制。</div></div>'
+  +'<div class="field"><label>每周预算 ¥</label><input class="input num" type="number" value="'+p.budget+'" onchange="App.setProfile(\'budget\',+this.value)"></div></div>'
+  +'<div class="small">性别 / 年龄 / 身高 / 体重为可选输入，V0.1 暂不参与计算。系统不提供医疗建议。</div></div>'
+  +'<div class="card card-pad"><div class="h3" style="margin-bottom:16px">食材偏好</div>'
+  +['protein','carb','veg'].map(cat=>'<div class="field"><label>'+CAT_LABEL[cat]+'</label><div class="small" style="margin-bottom:6px">'+(p.likes[cat].map(id=>FOODS[id].name).join(' · ')||'—')+'</div></div>').join('')
+  +'<div class="small">在 Onboarding 向导里可重新勾选；已移出：'+(p.dislikes.map(id=>FOODS[id].name).join('、')||'无')+'</div>'
+  +'<div style="margin-top:12px"><button class="btn btn-ghost btn-sm" data-nav="onboarding">重新配置 →</button></div></div>'
+  +'<div class="card card-pad"><div class="h3" style="margin-bottom:16px">厨具</div><div class="tool-chips">'
+  +['烤箱','微波炉','空气炸锅','电饭煲','冰箱冷冻室'].map(t=>'<button class="'+(p.tools.includes(t)?'on':'')+'" onclick="App.toggleTool(\''+t+'\')">'+t+'</button>').join('')
+  +'</div><div class="small" style="margin-top:10px">复热参数（P1）将按你的厨具给出。</div></div>'
+  +'<div class="card card-pad"><div class="h3" style="margin-bottom:16px">数据</div>'
+  +'<div style="display:flex;flex-direction:column;gap:10px">'
+  +'<button class="btn btn-ghost btn-sm" onclick="App.exportData()">导出数据 JSON</button>'
+  +'<button class="btn btn-ghost btn-sm" onclick="Demo.reset()">清空并重新开始</button></div>'
+  +'<div class="small" style="margin-top:12px">全部数据仅保存在本浏览器 localStorage，不上传服务器。</div></div>'
+  +'</div>';
+}
+
+/* ---------- 弹层：餐次详情 ---------- */
+const Modal={
+  open(html){$('#modalBox').innerHTML=html;$('#overlay').classList.add('open')},
+  close(){$('#overlay').classList.remove('open')},
+  meal(dayIdx,slot){
+    const day=S.plan.days[dayIdx];
+    const items=day.meals[slot];
+    const html='<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+    +'<div><div class="eyebrow">'+DAY_LABEL[dayIdx]+'</div><div class="h3">'+SLOT_LABEL[slot]+'</div></div>'
+    +'<div style="margin-left:auto;text-align:right"><div class="num" style="font-size:20px" id="mdKcal">'+Math.round(mealKcal(items))+' kcal</div><div class="small">蛋白 <b class="num" id="mdP">'+Math.round(mealP(items))+'g</b></div></div></div>'
+    +'<div class="meal-items">'+items.map((it,ii)=>{
+      const f=FOODS[it.id];
+      return '<div class="meal-item"><span class="tile sm '+f.tile+'">'+f.emoji+'</span><span style="font-weight:600">'+f.name+'</span>'
+      +(f.cat==='fat'?'':'<span class="stepper" style="margin-left:auto;height:34px"><button onclick="Modal.bump('+dayIdx+',\''+slot+'\','+ii+',-10)">−</button><span class="val num" style="min-width:64px" id="mdg'+ii+'">'+(f.eggPiece?Math.round(it.g/f.eggPiece*10)/10+' 个':it.g+'g')+'</span><button onclick="Modal.bump('+dayIdx+',\''+slot+'\','+ii+',10)">＋</button></span>')
+      +'</div>'}).join('')+'</div>'
+    +'<div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">'
+    +(slot!=='breakfast'?'<button class="btn btn-ghost btn-sm" onclick="Modal.swapProtein('+dayIdx+',\''+slot+'\')">换一个蛋白 🔄</button>':'')
+    +'<button class="btn btn-ink btn-sm" style="margin-left:auto" onclick="Modal.close()">完成</button></div>';
+    this.open(html);
+  },
+  bump(dayIdx,slot,ii,delta){
+    const it=S.plan.days[dayIdx].meals[slot][ii];const f=FOODS[it.id];
+    if(f.eggPiece){it.g=clamp(it.g+delta,55,330)}else{it.g=clamp(it.g+delta,30,400)}
+    recalcDay(dayIdx);save();
+    const items=S.plan.days[dayIdx].meals[slot];
+    $('#mdKcal').textContent=Math.round(mealKcal(items))+' kcal';
+    $('#mdP').textContent=Math.round(mealP(items))+'g';
+    $('#mdg'+ii).textContent=f.eggPiece?(Math.round(it.g/f.eggPiece*10)/10+' 个'):(it.g+'g');
+    renderWeek();
+  },
+  swapProtein(dayIdx,slot){
+    const items=S.plan.days[dayIdx].meals[slot];
+    const idx=items.findIndex(it=>FOODS[it.id].cat==='protein');
+    if(idx<0)return;
+    const pool=pickLikes('protein').filter(id=>id!==items[idx].id);
+    if(!pool.length){toast('没有可替换的蛋白');return}
+    const nid=pool[(dayIdx+(slot==='lunch'?1:2))%pool.length];
+    items[idx]={id:nid,g:FOODS[nid].portion};
+    recalcDay(dayIdx);save();this.meal(dayIdx,slot);renderWeek();toast('已换成 '+FOODS[nid].name);
+  }
+};
+
+/* ---------- 全局动作 ---------- */
+const App={
+  toggleBought(id){S.bought[id]=!S.bought[id];save();renderShopping()},
+  buyAll(){shopList().forEach(i=>S.bought[i.id]=true);save();renderShopping();toast('已全部标记为已买 ✓')},
+  clearBought(){S.bought={};save();renderShopping()},
+  toggleLoss(v){S.profile.loss=v;save();renderShopping()},
+  setMode(m){S.portionMode=m;save();renderPrep()},
+  toggleTask(key){
+    S.prepDone[key]=!S.prepDone[key];
+    const t=prepTasks().find(t=>t.key===key);
+    if(t){t.steps.forEach((s,si)=>{S.prepDone[t.key+'_'+si]=S.prepDone[key]})}
+    save();renderPrep();
+    if(S.prepDone[key]&&prepTasks().every(t=>S.prepDone[t.key])){this.finishAllPrep(true)}
+  },
+  toggleStep(key,si){
+    S.prepDone[key+'_'+si]=!S.prepDone[key+'_'+si];
+    const t=prepTasks().find(t=>t.key===key);
+    if(t&&t.steps.every((s,i)=>S.prepDone[key+'_'+i]))S.prepDone[key]=true;
+    else S.prepDone[key]=false;
+    save();renderPrep();
+    if(S.prepDone[key]&&prepTasks().every(t=>S.prepDone[t.key])){this.finishAllPrep(true)}
+  },
+  finishAllPrep(silent){
+    const tasks=prepTasks();
+    if(!tasks.every(t=>S.prepDone[t.key])){toast('还有任务未完成');return}
+    completePrepToFreedge();
+    renderAll();
+    if(!silent)toast('全部入库 ✓ 冷藏 Day1-3 · 冷冻 Day4-7');
+  },
+  setZone(z){zoneFilter=z;renderFridge()},
+  consume(vi){
+    // fridge 数组随 zone 过滤变化，需按 id+zone 定位
+    const items=zoneFilter==='all'?S.fridge:S.fridge.filter(i=>i.zone===zoneFilter);
+    const v=items[vi];const real=S.fridge.findIndex(x=>x===v);
+    if(real<0)return;
+    if(S.fridge[real].portions>0){S.fridge[real].portions--;save();renderFridge();toast('已取出一份 '+S.fridge[real].name)}
+  },
+  setProfile(k,v){
+    if(k==='kcal')v=clamp(v,1000,4000);if(k==='protein')v=clamp(v,40,300);if(k==='budget')v=clamp(v,0,1000);
+    S.profile[k]=v;
+    if(['kcal','protein','meals'].includes(k)&&S.plan){genPlan()}
+    save();renderSettings();
+    if(['kcal','protein','meals'].includes(k))toast('目标已更新，本周计划已重新生成');
+  },
+  toggleTool(t){const i=S.profile.tools.indexOf(t);if(i>=0)S.profile.tools.splice(i,1);else S.profile.tools.push(t);save();renderSettings()},
+  exportData(){
+    const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='renliang-os-data.json';a.click();
+    toast('已导出 ✓');
+  }
+};
+
+/* ---------- 全局事件 ---------- */
+document.addEventListener('click',e=>{
+  const nav=e.target.closest('[data-nav]');
+  if(nav){go(nav.dataset.nav)}
+});
+window.addEventListener('hashchange',()=>{
+  const h=(location.hash||'').replace('#','');
+  if(document.getElementById('view-'+h)&&h!==route){route=h;renderAll();window.scrollTo(0,0)}
+});
+
+/* ---------- 启动 ---------- */
+(function init(){
+  try{S=JSON.parse(localStorage.getItem(LS_KEY))}catch(e){S=null}
+  if(!S||!S.profile){S=defaults()}
+  if(!S.plan){genPlan()}          // 空状态也给默认计划，保证首屏可看
+  const h=(location.hash||'').replace('#','');
+  route=(location.hash&&document.getElementById('view-'+h))?h:'today';
+  if(!S.onboarded&&!location.hash)route='onboarding';
+  renderAll();
+})();
+</script>
+</body>
+</html>
